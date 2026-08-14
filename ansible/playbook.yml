@@ -1,0 +1,79 @@
+---
+- name: Deploy portfolio and java apps to EC2
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Update apt package list
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Create app directory on server
+      file:
+        path: /home/ubuntu/app
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Sync portfolio-app folder to server
+      synchronize:
+        src: ../portfolio-app/
+        dest: /home/ubuntu/app/portfolio-app/
+        rsync_opts:
+          - "--exclude=__pycache__"
+
+    - name: Sync java-app folder to server
+      synchronize:
+        src: ../java-app/
+        dest: /home/ubuntu/app/java-app/
+        rsync_opts:
+          - "--exclude=.git"       
+
+    - name: Copy docker-compose.yml to server
+      copy:
+        src: ../docker-compose.yml
+        dest: /home/ubuntu/app/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Run docker compose up
+      command: docker compose up -d --build
+      args:
+        chdir: /home/ubuntu/app
