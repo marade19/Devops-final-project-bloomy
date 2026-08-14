@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+# pyright: reportMissingImports=false
+from flask import Flask, render_template  # type: ignore[import-not-found]
 
 app = Flask(__name__)
 
