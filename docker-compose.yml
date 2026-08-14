@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  portfolio-app:
+    build: ./portfolio-app
+    ports:
+      - "5000:5000"
+    container_name: portfolio-app
+
+  java-app:
+    build: ./java-app
+    ports:
+      - "8080:8080"
+    container_name: java-app
