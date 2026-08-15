@@ -26,3 +26,13 @@ resource "aws_instance" "app_server" {
     Name = "devops-final-server"
   }
 }
+
+# Elastic IP - a fixed, unchanging public IP attached to the instance
+resource "aws_eip" "app_server_eip" {
+  instance = aws_instance.app_server.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "devops-final-eip"
+  }
+}
