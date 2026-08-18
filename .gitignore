@@ -1,6 +1,6 @@
 terraform/devops-key
-terraform.tfstate
+terraform/devops-key.pub
 terraform/*.tfstate
 terraform/*.tfstate.backup
 terraform/.terraform/
-terraform/devops-key.pub
+terraform.tfstate
